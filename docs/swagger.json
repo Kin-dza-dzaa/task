@@ -1,0 +1,181 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "REST API for currency rates to KZT.",
+        "title": "Rate API",
+        "contact": {
+            "name": "API Support"
+        },
+        "version": "0.1"
+    },
+    "host": "localhost:8000",
+    "basePath": "/v1",
+    "paths": {
+        "/rates/{date}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rates"
+                ],
+                "summary": "Gets all rates by given date.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Date in format: 11.11.2011",
+                        "name": "date",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rates",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_v1_rest.GetRatesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid date",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_v1_rest.httpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_v1_rest.httpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rates"
+                ],
+                "summary": "Makes call to external API and populates DB asynchronously.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Date in format: 11.11.2011",
+                        "name": "date",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Request is accepted and is being proccessed",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_v1_rest.httpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid date",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_v1_rest.httpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rates/{date}/{code}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rates"
+                ],
+                "summary": "Gets all rates by given date and code.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Date in format: 11.11.2011",
+                        "name": "date",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Code of currency: KZT",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rates",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_v1_rest.GetRatesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid date",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_v1_rest.httpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_v1_rest.httpResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "github_com_Kin-dza-dzaa_task_internal_entity.Rate": {
+            "type": "object",
+            "properties": {
+                "change": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "quant": {
+                    "type": "integer"
+                },
+                "rate": {
+                    "type": "number"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "valid_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_transport_http_v1_rest.GetRatesResponse": {
+            "type": "object",
+            "properties": {
+                "rates": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Kin-dza-dzaa_task_internal_entity.Rate"
+                    }
+                }
+            }
+        },
+        "internal_transport_http_v1_rest.httpResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
