@@ -1,0 +1,45 @@
+version: '0.1'
+services:
+  currency_postgres:
+    image: postgres:alpine
+    restart: on-failure:5 
+    environment: 
+      - POSTGRES_USER=kursUser
+      - POSTGRES_PASSWORD=kursPswd
+      - POSTGRES_DB=TEST
+    volumes:
+      - psql_volume:/var/lib/postgresql/data
+    networks:
+      - currency_services
+
+  currency_migrations:
+    image: migrate/migrate
+    restart: on-failure:5 
+    depends_on:
+      - currency_postgres
+    networks:
+      - currency_services
+    volumes:
+      - ./internal/repository/postgresql/migrations:/migrations
+    command: ["-database", "postgresql://kursUser:kursPswd@currency_postgres:5432/TEST?sslmode=disable", "-path", "/migrations/", "up"]
+
+  currency_api:
+    build: ./
+    restart: on-failure:5 
+    environment:
+      - PG_URL=postgresql://kursUser:kursPswd@currency_postgres:5432/TEST
+    ports:
+      - "8000:8000"
+    depends_on:
+      - currency_migrations
+    networks:
+      - currency_services
+    command: ["./app"]
+      
+networks:
+  currency_services:
+    driver: bridge
+    name: currency_network
+
+volumes:
+  psql_volume:
